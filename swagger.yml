@@ -1,9 +1,116 @@
 openapi: 3.0.2
 info:
-  title: assets_api
-  version: 1.0.0
+    title: assets
+    version: 1.0.0
+paths:
+    /sessions:
+        summary: Path used to manage the list of sessions.
+        description: >-
+            The REST endpoint/path used to list and create zero or more `session` entities.  This path
+            contains a `GET` and `POST` operation to perform the list and create tasks, respectively.
+        post:
+            requestBody:
+                description: A new `session` to be created.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/session'
+                required: true
+            tags:
+                - sessions
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/session'
+                            examples:
+                                '201':
+                                    value:
+                                        sessionId: 174089643
+                                        isAdmin: true
+                    description: Successful response.
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                Invalid JSON:
+                                    value:
+                                        error: Unexpected token a in JSON at position 0
+                                One or all params are missing:
+                                    value:
+                                        error: One or all params are missing
+                    description: Bad Request
+                '401':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                'Unauthorized: username or password is incorrect':
+                                    value:
+                                        error: 'Unauthorized: username or password is incorrect'
+                    description: Unauthorized
+            operationId: createsession
+            summary: Create a session
+            description: Creates a new instance of a `session`.
+        delete:
+            tags:
+                - sessions
+            responses:
+                '204':
+                    description: Session successfully deleted
+                '401':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                'Unauthorized: session is invalid':
+                                    value:
+                                        error: 'Unauthorized: session is invalid'
+                                'Unauthorized: no authorization header':
+                                    value:
+                                        error: 'Unauthorized: no authorization header'
+                                'Unauthorized: user is invalid':
+                                    value:
+                                        error: 'Unauthorized: user is invalid'
+                    description: Unauthorized
+            security:
+                -
+                    bearer: []
+            summary: Logout
+            description: Deletes a `session`.
 components:
-  securitySchemes:
-    Bearer:
-      scheme: bearer
-      type: http
+    schemas:
+        session:
+            title: Root Type for session
+            description: ''
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+            example:
+                username: marcus
+                password: qwerty
+        error:
+            title: Root Type for error
+            description: ''
+            type: object
+            properties:
+                error:
+                    type: string
+            example:
+                error: 'Unauthorized: username or password is incorrect'
+    securitySchemes:
+        bearer:
+            scheme: bearer
+            type: http
+tags:
+    -
+        name: sessions
+        description: ''

@@ -83,6 +83,62 @@ paths:
                     bearer: []
             summary: Logout
             description: Deletes a `session`.
+    /users:
+        summary: Path used to creating users.
+        description: This path contains `Post` operation to create new users.
+        post:
+            tags:
+                - users
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            examples:
+                                user:
+                                    value:
+                                        id: 3
+                                        email: mama@email.com
+                                        name: mama
+                                        password: mama
+                    description: Created user
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                Password is missing:
+                                    value:
+                                        error: Parameter password is missing
+                                Name is missing:
+                                    value:
+                                        error: Parameter name is missing
+                                Email is missing:
+                                    value:
+                                        error: Parameter email is missing
+                    description: Parameter missing
+                '500':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                Email exists already:
+                                    value:
+                                        error: |-
+
+                                            Invalid `prisma.user.create()` invocation in
+                                            C:\Users\marcus\desktop\assets_api\index.js:20:40
+
+                                              17 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+                                              18 try {
+                                              19     checkParams(req, res, [{ name: 'email', type: 'string', regex: emailRegex }, { name: 'password', type: 'string', minLength: 3 }, { name: 'name', type: 'string', minLength: 3 }])
+                                            → 20     const user = await prisma.user.create(
+                                            Unique constraint failed on the fields: (`email`)
+                    description: Server error
+            operationId: createuser
+            summary: Create a user.
+            description: Creates a new instance of a `user`.
 components:
     schemas:
         session:
@@ -106,6 +162,29 @@ components:
                     type: string
             example:
                 error: 'Unauthorized: username or password is incorrect'
+        user:
+            description: ''
+            required:
+                - name
+                - email
+                - password
+            type: object
+            properties:
+                name:
+                    description: ''
+                    type: string
+                email:
+                    description: ''
+                    type: string
+                password:
+                    format: password
+                    description: ''
+                    type: string
+            example:
+                id: 3
+                email: mama@email.com
+                name: mama
+                password: mama
     securitySchemes:
         bearer:
             scheme: bearer
